@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import '../models/news.dart';
 import '../models/comment.dart';
 
@@ -13,20 +14,46 @@ class ApiService {
   ApiService._internal() {
     _dio = Dio(BaseOptions(
       baseUrl: baseUrl,
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
+      sendTimeout: const Duration(seconds: 30),
       headers: {
         'Content-Type': 'application/json',
         'User-Agent': 'GeekPark News App',
+        'Accept': 'application/json',
       },
     ));
 
-    // 添加拦截器用于日志和错误处理
-    _dio.interceptors.add(LogInterceptor(
-      requestBody: true,
-      responseBody: true,
-      logPrint: (obj) => print(obj),
+    // 添加错误处理拦截器
+    _dio.interceptors.add(InterceptorsWrapper(
+      onError: (error, handler) {
+        String errorMessage = '网络请求失败';
+        
+        if (error.type == DioExceptionType.connectionTimeout) {
+          errorMessage = '连接超时，请检查网络连接';
+        } else if (error.type == DioExceptionType.receiveTimeout) {
+          errorMessage = '响应超时，请稍后重试';
+        } else if (error.type == DioExceptionType.connectionError) {
+          errorMessage = '网络连接错误，请检查网络设置';
+        } else if (error.response?.statusCode == 404) {
+          errorMessage = '请求的资源不存在';
+        } else if (error.response?.statusCode == 500) {
+          errorMessage = '服务器内部错误';
+        }
+        
+        print('API请求错误: $errorMessage - ${error.message}');
+        handler.next(error);
+      },
     ));
+
+    // 添加日志拦截器（仅在调试模式下）
+    if (kDebugMode) {
+      _dio.interceptors.add(LogInterceptor(
+        requestBody: false,
+        responseBody: false,
+        logPrint: (obj) => print(obj),
+      ));
+    }
   }
 
   // 获取一周最新文章

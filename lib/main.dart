@@ -3,8 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import 'providers/news_provider.dart';
 import 'screens/home_screen.dart';
-import 'screens/splash_screen.dart';
-import 'screens/login_screen.dart';
 import 'services/db_service.dart';
 
 void main() async {
@@ -38,7 +36,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        title: 'wei_sr新闻',
+        title: '极客公园新闻',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.blue,
@@ -198,12 +196,10 @@ class MyApp extends StatelessWidget {
             },
           ),
         ),
-        home: const SplashScreen(),
+        home: const HomeScreen(),
         // 路由配置
         routes: {
           '/home': (context) => const HomeScreen(),
-          '/login': (context) => const LoginScreen(),
-          '/splash': (context) => const SplashScreen(),
         },
         // 全局导航观察器
         navigatorObservers: [

@@ -1,3 +1,15 @@
+import java.io.FileInputStream
+import java.util.Properties
+
+// 读取 key.properties 文件
+val keyPropertiesFile = rootProject.file("key.properties")
+val keyProperties = Properties()
+if (keyPropertiesFile.exists()) {
+    keyProperties.load(FileInputStream(keyPropertiesFile))
+} else {
+    throw GradleException("key.properties 文件未找到，请确保该文件存在于项目根目录下。")
+}
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -8,7 +20,9 @@ plugins {
 android {
     namespace = "com.example.wei_sr"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // ndkVersion = flutter.ndkVersion
+    // 更新 NDK 版本
+    ndkVersion = "27.2.12479018" 
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -30,11 +44,19 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(keyProperties["storeFile"] as String)
+            storePassword = keyProperties["storePassword"] as String
+            keyAlias = keyProperties["keyAlias"] as String
+            keyPassword = keyProperties["keyPassword"] as String
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // 使用 release 签名配置
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }

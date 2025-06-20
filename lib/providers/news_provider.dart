@@ -123,14 +123,32 @@ class NewsProvider with ChangeNotifier {
       }
       
       if (_isOnline) {
-        _hotWeeklyNews = await _apiService.getHotWeeklyNews();
-        // 缓存到本地
-        await _dbService.cacheNewsList(_hotWeeklyNews);
+        try {
+          _hotWeeklyNews = await _apiService.getHotWeeklyNews();
+          // 缓存到本地
+          await _dbService.cacheNewsList(_hotWeeklyNews);
+        } catch (networkError) {
+          debugPrint('网络请求失败，尝试加载缓存数据: $networkError');
+          // 网络请求失败时，尝试加载缓存数据
+          final cachedNews = await _dbService.getCachedNews(limit: 7);
+          if (cachedNews.isNotEmpty) {
+            _hotWeeklyNews = cachedNews;
+            _setError('网络连接异常，已显示缓存内容');
+          } else {
+            _setError('网络连接失败，请检查网络设置后重试');
+          }
+          return;
+        }
       } else {
         _hotWeeklyNews = await _dbService.getCachedNews(limit: 7);
+        if (_hotWeeklyNews.isEmpty) {
+          _setError('当前离线且无缓存数据，请连接网络后重试');
+          return;
+        }
       }
       
       _isLoading = false;
+      _errorMessage = null;
       notifyListeners();
     } catch (e) {
       _setError('加载热门新闻失败: $e');
