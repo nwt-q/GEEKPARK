@@ -94,8 +94,8 @@ git push origin feature/your-feature-name
 
 ## 联系我们
 如果您在使用过程中遇到问题，或者有任何建议和反馈，请通过以下方式联系我们：
-- 提交 GitHub Issues：[https://github.com/your-repo/wei_sr/issues](https://github.com/nwt-q/GEEKPARK/issues)
-- 发送邮件至：[your-email@example.com](mailto:3178146280l@qq.com)
+- 提交 GitHub Issues：[[https://github.com/your-repo/wei_sr/issues](https://github.com/nwt-q/GEEKPARK/issues)](https://github.com/nwt-q/GEEKPARK/issues)
+- 发送邮件至：[3178146280l@qq.com](mailto:3178146280l@qq.com)
 
 ## 许可证
 本项目采用 [MIT 许可证](LICENSE) 进行授权。
